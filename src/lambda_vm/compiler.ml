@@ -83,7 +83,6 @@ let rec compile_expr ~stack gas next_ident vars code =
     let first = compile_expr vars first in
     let second = compile_expr vars second in
     E_pair { first; second }
-
 let compile_expr gas next_ident vars code =
   let stack = max_stack_depth in
   compile_expr ~stack gas next_ident vars code
