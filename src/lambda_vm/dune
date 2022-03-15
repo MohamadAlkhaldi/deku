@@ -1,10 +1,6 @@
 (library
  (name lambda_vm)
-<<<<<<< HEAD
  (modules_without_implementation ast)
  (preprocess
   (pps ppx_deriving.show)))
-=======
- (modules_without_implementation ir ast)
- (preprocess (pps ppx_deriving.show)))
->>>>>>> 9392449f (lambda_vm: testing with alcotest and qcheck)
+

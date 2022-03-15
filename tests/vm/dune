@@ -1,3 +1,16 @@
+(library
+ (name vm_test)
+ (modules vm_test)
+ (libraries lambda_vm alcotest))
+
+(library
+ (name test_gas)
+ (inline_tests)
+ (modules test_gas)
+ (libraries vm_test lambda_vm)
+ (preprocess
+  (pps ppx_lambda_vm ppx_expect)))
+
 (test
  (name test_vm)
  (libraries lambda_vm alcotest qcheck-alcotest)
