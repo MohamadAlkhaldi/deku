@@ -166,6 +166,7 @@ let rec eval ~stack gas env code =
     let first = eval_call env first in
     let second = eval_call env second in
     V_pair { first; second }
+
 let eval gas env code =
   let stack = max_stack_depth in
   eval ~stack gas env code
