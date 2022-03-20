@@ -144,7 +144,7 @@ let spawn ~file =
   let output_stream =
     Long_lived_process.spawn ~file ~on_error ~on_close input_stream in
 
-  (* deal with outputs an exceptions *)
+  (* deal with an exception in the output *)
   let handle_outputs () =
     Lwt_stream.iter
       (fun json ->
