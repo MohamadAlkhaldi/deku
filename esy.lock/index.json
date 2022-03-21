@@ -1,5 +1,5 @@
 {
-  "checksum": "ea99319ada382bda50696ea6f67751be",
+  "checksum": "e6fdd9c140ec590b9f5949c19461cf92",
   "root": "sidechain@link-dev:./esy.json",
   "node": {
     "yarn-pkg-config@github:esy-ocaml/yarn-pkg-config#db3a0b63883606dd57c54a7158d560d6cba8cd79@d41d8cd9": {
@@ -1757,7 +1757,7 @@
     "electron-to-chromium@1.4.86@d41d8cd9": {
       "id": "electron-to-chromium@1.4.86@d41d8cd9",
       "name": "electron-to-chromium",
-      "version": "1.4.86",
+      "version": "1.4.88",
       "source": {
         "type": "install",
         "source": [
@@ -1932,14 +1932,14 @@
       "dependencies": [],
       "devDependencies": []
     },
-    "caniuse-lite@1.0.30001317@d41d8cd9": {
-      "id": "caniuse-lite@1.0.30001317@d41d8cd9",
+    "caniuse-lite@1.0.30001319@d41d8cd9": {
+      "id": "caniuse-lite@1.0.30001319@d41d8cd9",
       "name": "caniuse-lite",
-      "version": "1.0.30001317",
+      "version": "1.0.30001319",
       "source": {
         "type": "install",
         "source": [
-          "archive:https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001317.tgz#sha1:0548fb28fd5bc259a70b8c1ffdbe598037666a1b"
+          "archive:https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001319.tgz#sha1:eb4da4eb3ecdd409f7ba1907820061d56096e88f"
         ]
       },
       "overrides": [],
@@ -2059,14 +2059,14 @@
       "dependencies": [],
       "devDependencies": []
     },
-    "blakejs@1.1.1@d41d8cd9": {
-      "id": "blakejs@1.1.1@d41d8cd9",
+    "blakejs@1.2.1@d41d8cd9": {
+      "id": "blakejs@1.2.1@d41d8cd9",
       "name": "blakejs",
-      "version": "1.1.1",
+      "version": "1.2.1",
       "source": {
         "type": "install",
         "source": [
-          "archive:https://registry.npmjs.org/blakejs/-/blakejs-1.1.1.tgz#sha1:bf313053978b2cd4c444a48795710be05c785702"
+          "archive:https://registry.npmjs.org/blakejs/-/blakejs-1.2.1.tgz#sha1:5057e4206eadb4a97f7c0b6e197a505042fc3814"
         ]
       },
       "overrides": [],
@@ -3900,7 +3900,7 @@
         "ocaml@github:esy-ocaml/ocaml#65e3f82dcd867d2b1f27c84597b3c25259b09396@d41d8cd9",
         "@opam/dune-configurator@opam:3.0.3@d0cefa08",
         "@opam/dune@github:EduardoRFS/dune:dune.opam#b9d9eb13366d1edcdfbdb3afe3afa5c08ff87e54@d41d8cd9",
-        "@opam/conf-libssl@opam:3@11f68e56",
+        "@opam/conf-libssl@opam:3@e3469184",
         "@opam/base-unix@opam:base@87d0b2eb",
         "@esy-ocaml/substs@0.0.1@d41d8cd9"
       ],
@@ -3908,7 +3908,7 @@
         "ocaml@github:esy-ocaml/ocaml#65e3f82dcd867d2b1f27c84597b3c25259b09396@d41d8cd9",
         "@opam/dune-configurator@opam:3.0.3@d0cefa08",
         "@opam/dune@github:EduardoRFS/dune:dune.opam#b9d9eb13366d1edcdfbdb3afe3afa5c08ff87e54@d41d8cd9",
-        "@opam/conf-libssl@opam:3@11f68e56",
+        "@opam/conf-libssl@opam:3@e3469184",
         "@opam/base-unix@opam:base@87d0b2eb"
       ]
     },
