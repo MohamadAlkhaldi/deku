@@ -97,6 +97,7 @@ create_new_deku_environment() {
   root_hash = {
     current_block_hash = 0x;
     current_block_height = 0;
+    current_block_round = 0;
     current_state_hash = 0x;
     current_handles_hash = 0x;
     current_validators = [
