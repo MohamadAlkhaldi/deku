@@ -16,9 +16,10 @@ val sign : key:Secret.t -> t -> Protocol_signature.t
 val verify : signature:Protocol_signature.t -> t -> bool
 val genesis : t
 
+val update_round : t -> consensus_round:int -> t
 (** [update_round block round] changes the value of [block.consensus_round] and recomputes the hash
     *)
-val update_round : t -> consensus_round:int -> t
+
 val produce :
   state:Protocol_state.t ->
   next_state_root_hash:BLAKE2B.t option ->

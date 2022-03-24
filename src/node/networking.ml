@@ -121,8 +121,7 @@ module Consensus_operation = struct
   [@@deriving yojson]
   type response = unit [@@deriving yojson]
   let path = "/consensus"
-end
-[@deriving yojson]
+end [@deriving yojson]
 
 module Withdraw_proof = struct
   type request = { operation_hash : BLAKE2B.t } [@@deriving yojson]

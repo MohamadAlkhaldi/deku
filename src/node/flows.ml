@@ -479,7 +479,7 @@ let received_precommit_block state update_state ~block ~sender ~hash
   let state =
     append_signature state update_state ~hash ~signature:hash_signature ~height
       ~round in
-  match Tendermint.is_decided_on (!get_consensus ()) height with
+  match Tendermint.get_block_opt (!get_consensus ()) height with
   | Some (block, round) when not (block.Block.hash = hash) ->
     Result.Error
       (`Invalid_block
@@ -555,8 +555,7 @@ let received_consensus_step state update_state operation sender hash
     prerr_endline
       (Printf.sprintf "**** And we're still treating %s"
          (Tendermint_internals.string_of_op operation));
-    let%await consensus =
-      add_consensus_op consensus update_state sender operation in
+    let%await consensus = add_consensus_op consensus sender operation in
 
     (* Execute the consensus step and updates the consensus state.
        In the case this step is a PrecommitOP, we may need to commit the whole block

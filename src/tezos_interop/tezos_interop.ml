@@ -189,8 +189,8 @@ end
 module Consensus = struct
   open Michelson.Michelson_v1_primitives
   open Tezos_micheline
-  let commit_state_hash ~context ~block_height ~block_round ~block_payload_hash ~state_hash
-      ~withdrawal_handles_hash ~validators ~signatures =
+  let commit_state_hash ~context ~block_height ~block_round ~block_payload_hash
+      ~state_hash ~withdrawal_handles_hash ~validators ~signatures =
     let module Payload = struct
       type t = {
         block_height : int64;
@@ -221,7 +221,7 @@ module Consensus = struct
       {
         block_height;
         block_payload_hash;
-        block_round = block_round;
+        block_round;
         signatures;
         handles_hash = withdrawal_handles_hash;
         state_hash;
@@ -323,8 +323,10 @@ module Consensus = struct
     let micheline_to_validators = function
       | Ok
           (Micheline.Prim
-            (_, D_Pair, [Prim (_, D_Pair, [_; _; Seq (_, key_hashes)], _); _; _], _))
-        ->
+            ( _,
+              D_Pair,
+              [Prim (_, D_Pair, [_; _; Seq (_, key_hashes)], _); _; _],
+              _ )) ->
         List.fold_left_ok
           (fun acc k ->
             match k with

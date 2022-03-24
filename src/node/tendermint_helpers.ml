@@ -1,4 +1,4 @@
-module CI = Tendermint_internals
+open Tendermint_internals
 module type COUNTER = sig
   type 'a t
 
@@ -43,7 +43,7 @@ module Counter : COUNTER = struct
 end
 
 module HeightHash = struct
-  type t = CI.height
+  type t = height
   let equal i j = i = j
   let hash i = Int64.(logand i max_int |> to_int)
 end

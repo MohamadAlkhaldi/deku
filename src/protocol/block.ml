@@ -10,8 +10,9 @@ type t = {
   previous_hash : BLAKE2B.t;
   author : Key_hash.t;
   block_height : int64;
-  consensus_round : int; (* Round is not a block information, but this is easier to compute hashes
-and stuff *)
+  consensus_round : int;
+  (* Round is not a block information, but this is easier to compute hashes
+     and stuff *)
   operations : Protocol_operation.t list;
 }
 [@@deriving yojson]
@@ -41,8 +42,9 @@ let hash, verify =
     let payload = Yojson.Safe.to_string json in
     let block_payload_hash = BLAKE2B.hash payload in
     let hash =
-      Tezos.Deku.Consensus.hash_block ~block_height ~consensus_round ~block_payload_hash
-        ~state_root_hash ~withdrawal_handles_hash ~validators_hash in
+      Tezos.Deku.Consensus.hash_block ~block_height ~consensus_round
+        ~block_payload_hash ~state_root_hash ~withdrawal_handles_hash
+        ~validators_hash in
     let hash = BLAKE2B.hash (BLAKE2B.to_raw_string hash) in
     f (hash, block_payload_hash) in
   let hash = apply Fun.id in
@@ -90,9 +92,11 @@ let genesis =
     ~author:(Key_hash.of_key Wallet.genesis_wallet)
 
 let update_round block ~consensus_round =
-  make ~state_root_hash:block.state_root_hash ~withdrawal_handles_hash:block.withdrawal_handles_hash
-  ~validators_hash:block.validators_hash ~previous_hash:block.previous_hash ~author:block.author
-  ~block_height:block.block_height ~consensus_round ~operations:block.operations
+  make ~state_root_hash:block.state_root_hash
+    ~withdrawal_handles_hash:block.withdrawal_handles_hash
+    ~validators_hash:block.validators_hash ~previous_hash:block.previous_hash
+    ~author:block.author ~block_height:block.block_height ~consensus_round
+    ~operations:block.operations
 
 let produce ~state ~next_state_root_hash =
   let next_state_root_hash =

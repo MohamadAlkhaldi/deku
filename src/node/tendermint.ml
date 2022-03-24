@@ -4,36 +4,30 @@ open Tendermint_data
 open Tendermint_processes
 open Tendermint_helpers
 
-module CI = Tendermint_internals
-
 type t = {
   identity : State.identity;
   clocks : clock list IntSet.t;
   consensus_states : consensus_state IntSet.t;
-  (* FIXME: we don't want this to be mutable *)
   mutable procs : (height * process) list;
   node_state : State.t;
   input_log : input_log;
-  output_log : output_log;
+  output_log : OutputLog.t;
 }
-(* Tendermint simplification: as Deku is not going to run several
-   blockchain heights at the same time, we only consider one set of
-   states and clocks. *)
 
 type should_restart_tendermint =
   | DontRestart
-  | RestartAtHeight of CI.height
-  | RestartAtRound  of CI.round
+  | RestartAtHeight of height
+  | RestartAtRound  of round
 
 let make node_state current_height =
   let identity = node_state.State.identity in
   let clocks = IntSet.create 0 in
-  let new_state = CI.fresh_state current_height in
+  let new_state = fresh_state current_height in
   let states = IntSet.create 0 in
   IntSet.add states current_height new_state;
   let procs = List.map (fun x -> (current_height, x)) all_processes in
-  let input_log = CD.empty () in
-  let output_log = CD.OutputLog.empty () in
+  let input_log = empty () in
+  let output_log = OutputLog.empty () in
   {
     identity;
     clocks;
@@ -49,8 +43,7 @@ let current_height node =
 
 (* FIXME: bad design *)
 let () =
-  CI.produce_value :=
-    fun state -> CI.block (Building_blocks.produce_block state)
+  produce_value := fun state -> block (Building_blocks.produce_block state)
 
 (** Process messages in the queue and decide actions; pure function, to be interpeted in Lwt later.
     TODO: Ensures that messages received over network go through signature verification before adding them to input_log
@@ -61,9 +54,9 @@ let tendermint_step node =
     match processes with
     | ((height, process) as p) :: rest -> begin
       let consensus_state = IntSet.find node.consensus_states height in
-      let round = consensus_state.CI.round in
+      let round = consensus_state.Tendermint_internals.round in
       (* prerr_endline (Printf.sprintf "***** In Tendermint, process height is %Ld, state height is %Ld and round is %d" height
-        consensus_state.CI.height round); *)
+         consensus_state.Tendermint_internals.height round); *)
       let message_log = node.input_log in
       let output = node.output_log in
       match
@@ -93,7 +86,7 @@ let tendermint_step node =
         exec_procs rest still_active network_actions
     end
     | [] -> (still_active, network_actions, DontRestart) in
-  (* let () = CI.debug node.node_state (Printf.sprintf "I have %d processes to execute" (List.length
+  (* let () = debug node.node_state (Printf.sprintf "I have %d processes to execute" (List.length
      node.procs)) in *)
   let still_active, network_actions, should_restart =
     exec_procs node.procs [] [] in
@@ -104,14 +97,14 @@ let tendermint_step node =
 
 let add_to_input input_log height step content =
   let index = (height, step) in
-  CD.add input_log index content
+  add input_log index content
 
 let is_valid_consensus_op state consensus_op =
-  (* TODO: this is a filter for input log since it's only optimization (don't keep stuff from past)*)
+  (* TODO: ConsensusStep2 this is a filter for input log since it's only optimization (don't keep stuff from past)*)
   let open Result in
   let _all_operations_properly_signed = function
     | _ -> true in
-  let h = CI.height consensus_op in
+  let h = height consensus_op in
   let current_height = state.State.protocol.block_height in
   if current_height > h then
     let s =
@@ -130,17 +123,14 @@ let broadcast_op state consensus_op =
   let node_address = state.State.identity.t in
   let secret_key = state.State.identity.secret in
   (* Hashing the operation *)
-  let operation_hash = CI.hash_of_consensus_op consensus_op node_address in
+  let operation_hash = hash_of_consensus_op consensus_op node_address in
   let operation_signature =
     Protocol.Signature.sign ~key:secret_key operation_hash in
   (* Hash the value+height+round even if it's nil *)
-  let block_hash = CI.hash_of_consensus_value consensus_op in
-  CI.debug state (Printf.sprintf "sending %s" (CI.string_of_op consensus_op));
-  (* Sign the *hash* of this because of how the signature is checked on Tezos *)
-  let hash_hash =
-    Crypto.BLAKE2B.hash (Crypto.BLAKE2B.to_raw_string block_hash) in
+  let block_hash = hash_of_consensus_value consensus_op in
+  debug state (Printf.sprintf "sending %s" (string_of_op consensus_op));
   (* prerr_endline (Printf.sprintf "*** Block hash sent by Tendermint: %s" (Crypto.BLAKE2B.to_string
-  block_hash)); *)
+     block_hash)); *)
   let block_signature = Protocol.Signature.sign ~key:secret_key block_hash in
   Lwt.async (fun () ->
       let%await () = Lwt_unix.sleep 0.8 in
@@ -153,45 +143,44 @@ let broadcast_op state consensus_op =
           operation_signature;
         })
 
-let add_consensus_op node _update_state sender op =
+let add_consensus_op node sender op =
   let input_log = node.input_log in
   let input_log =
-    add_to_input input_log (CI.height op) (CI.step_of_op op)
-      (CD.content_of_op sender op) in
+    add_to_input input_log (height op) (step_of_op op) (content_of_op sender op)
+  in
   Lwt.return { node with input_log }
 
 let rec exec_consensus node =
-  (* CI.debug node.node_state
+  (* debug node.node_state
      (Printf.sprintf "State is currently at height %Ld"
      (node.node_state.State.protocol.Protocol.block_height)); *)
-  let open CI in
-  (* CI.debug node.node_state (Printf.sprintf "length of procs: %d" (List.length node.procs));*)
+  (* debug node.node_state (Printf.sprintf "length of procs: %d" (List.length node.procs));*)
   let node, network_actions, should_restart = tendermint_step node in
 
   (* Send all actions over the network *)
   List.iter (broadcast_op node.node_state) network_actions;
   match (node.procs, should_restart) with
-    | _, RestartAtRound r ->
-      let cur_height = current_height node in
-      let cur_state = IntSet.find node.consensus_states cur_height in
-      cur_state.round <- r;
-      let new_processes = List.map (fun p -> (cur_height, p)) all_processes in
-      exec_consensus { node with procs = new_processes }
-    | [], RestartAtHeight new_height ->
-      let new_state = CI.fresh_state new_height in
-      IntSet.add node.consensus_states new_height new_state;
-      let new_processes = List.map (fun p -> (new_height, p)) all_processes in
-      { node with procs = new_processes }
-      (* exec_consensus { node with procs = new_processes } *)
-    | _ ->
-      (* Start the non-started clocks *)
-      IntSet.map_inplace
-        (fun height clocks ->
-          List.map
-            (fun c -> start_clock node c.Clock.height c.Clock.round c)
-            clocks)
-        node.clocks;
-        node
+  | _, RestartAtRound r ->
+    let cur_height = current_height node in
+    let cur_state = IntSet.find node.consensus_states cur_height in
+    cur_state.round <- r;
+    let new_processes = List.map (fun p -> (cur_height, p)) all_processes in
+    exec_consensus { node with procs = new_processes }
+  | [], RestartAtHeight new_height ->
+    let new_state = fresh_state new_height in
+    IntSet.add node.consensus_states new_height new_state;
+    let new_processes = List.map (fun p -> (new_height, p)) all_processes in
+    { node with procs = new_processes }
+    (* exec_consensus { node with procs = new_processes } *)
+  | _ ->
+    (* Start the non-started clocks *)
+    IntSet.map_inplace
+      (fun height clocks ->
+        List.map
+          (fun c -> start_clock node c.Clock.height c.Clock.round c)
+          clocks)
+      node.clocks;
+    node
 
 (* TODO: don't use async and global state,
    maintain an internal list of clocks started at a given time and regularly call exec_consensus
@@ -203,27 +192,29 @@ and start_clock node clock_height clock_round clock =
   if clock.Clock.started then
     clock
   else begin
-    (* CI.debug node.node_state (Printf.sprintf "Starting clock for step %s height %Ld round %d"
-       (CI.string_of_step clock.Clock.step) clock_height clock_round); *)
+    (* debug node.node_state (Printf.sprintf "Starting clock for step %s height %Ld round %d"
+       (string_of_step clock.Clock.step) clock_height clock_round); *)
     async (fun () ->
-        Lwt_unix.sleep 2. (* FIXME (float_of_int clock.Clock.time) *) >>= fun () ->
+        Lwt_unix.sleep 2.
+        (* FIXME (float_of_int clock.Clock.time) *) >>= fun () ->
         (* Checks that the clock is still relevant *)
         let current_height = current_height node in
         (* FIXME: fragile code; we should fix the whole way we handle clocks with Lwt *)
         let current_round =
-          (IntSet.find node.consensus_states current_height).CI.round in
-        CI.debug node.node_state (Printf.sprintf "This clock was created for height %Ld and round
-           %d; we're at height %Ld and round %d" clock_height clock_round current_height
-           current_round);
+          (IntSet.find node.consensus_states current_height)
+            .Tendermint_internals.round in
+        debug node.node_state
+          (Printf.sprintf
+             "This clock was created for height %Ld and round\n\
+             \           %d; we're at height %Ld and round %d" clock_height
+             clock_round current_height current_round);
         if current_height > clock_height || current_round > clock_round then
           Lwt.return_unit
         else
-          (* let () = CI.debug node.node_state (Printf.sprintf "Executing the clock for step %s height %Ld round %d"
-             (CI.string_of_step clock.Clock.step) clock_height clock_round) in *)
+          (* let () = debug node.node_state (Printf.sprintf "Executing the clock for step %s height %Ld round %d"
+             (string_of_step clock.Clock.step) clock_height clock_round) in *)
           let input_log = node.input_log in
-          let _ =
-            add_to_input input_log clock_height clock.Clock.step CD.Timeout
-          in
+          let _ = add_to_input input_log clock_height clock.Clock.step Timeout in
           let new_node = exec_consensus node in
           (* FIXME: ? I don't want this to be mutable *)
           node.procs <- new_node.procs;
@@ -231,24 +222,16 @@ and start_clock node clock_height clock_round clock =
     { clock with started = true }
   end
 
-let make_proposal height round block =
-  CI.ProposalOP (height, round, CI.block block, -1)
+let make_proposal height round b = ProposalOP (height, round, block b, -1)
 
-let is_decided_on cstate (height : height) =
-  let decision = cstate.output_log in
-  match OutputLog.get decision height with
-  | Some (Block b, round) -> Some (b, round)
-  | _ -> None
-
-(** Required to publish hash on Tezos *)
 let get_block_opt cstate height =
   match OutputLog.get cstate.output_log height with
   | Some (Block b, round) -> Some (b, round)
   | _ -> None
 
-let height_from_op op = Tendermint_internals.height op
+let height_from_op op = height op
 
-let round_from_op op = Tendermint_internals.round op
+let round_from_op op = round op
 
 let get_block cstate height =
   match OutputLog.get cstate.output_log (Int64.sub height 1L) with

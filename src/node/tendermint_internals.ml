@@ -2,7 +2,6 @@ open Crypto
 open Protocol
 open Validators
 
-(** Tendermint sometimes decides on a `Nil` value. *)
 type value =
   | Block of Protocol.Block.t
   | Nil
@@ -13,19 +12,15 @@ let string_of_value = function
   | Block b ->
     Printf.sprintf "block %s" (Crypto.BLAKE2B.to_string b.Protocol.Block.hash)
 
-(* TODO: FIXME: Tendermint *)
 let repr_of_value v = v
 
-(* FIXME: this is copied bad design. *)
 let produce_value : (State.t -> value) ref = ref (fun _ -> assert false)
 
 let is_valid state value =
   match value with
   | Nil -> false
   | Block block ->
-    (* FIXME: check signatures for real *)
     let is_all_operations_properly_signed _block = true in
-    (*TODO: real logging system *)
     if block.Block.block_height < state.State.protocol.block_height then begin
       prerr_endline
         (Printf.sprintf
@@ -42,23 +37,20 @@ let is_valid state value =
 let block b = Block b
 let nil = Nil
 
-let update_value value round = match value with
+let update_value value round =
+  match value with
   | Nil -> failwith "Can't update nil value"
-  | Block b -> Block (Protocol.Block.update_round b round)
+  | Block b -> Block (Protocol.Block.update_round b ~consensus_round:round)
 
 type height = int64 [@@deriving yojson]
 
 type round = int [@@deriving yojson]
-(** At a specific (chain) height, Tendermint's consensus algorithm may run several rounds.*)
 
-(** Tendermint's consensus goes through 3 steps at each round. Used inside a consensus instance in a node. *)
 type consensus_step =
   | Proposal
   | Prevote
   | Precommit
 
-(** Tendermint's consensus step-communication with other nodes. Two first fields are height and
-    round of when the operation was sent. *)
 type sidechain_consensus_op =
   | ProposalOP  of (height * round * value * round)
   | PrevoteOP   of (height * round * value)
@@ -73,7 +65,8 @@ let step_of_op = function
 let get_block = function
   | ProposalOP (_, _, Block b, _)
   | PrevoteOP (_, _, Block b)
-  | PrecommitOP (_, _, Block b) -> Some b
+  | PrecommitOP (_, _, Block b) ->
+    Some b
   | _ -> None
 
 let string_of_op = function
@@ -109,7 +102,6 @@ let value_of_operation = function
   | PrecommitOP (_, _, v) ->
     v
 
-(** Hash of a consensus_op (including the step) + sender. *)
 let hash_of_consensus_op consensus_op sender =
   let s1 = string_of_op consensus_op in
   let s2 = Crypto.Key_hash.to_string sender in
@@ -121,8 +113,6 @@ let compute_hash block_hash height round =
   let s3 = string_of_int round in
   Crypto.BLAKE2B.hash (s1 ^ s2 ^ s3)
 
-(** Hash of a value+height+round. If the value is not Nil, returns the state_root_hash of the block.
-    Unlike hash_of_consensus_op, does not discriminate the steps. *)
 let hash_of_consensus_value consensus_op =
   let height, round, value =
     match consensus_op with
@@ -177,7 +167,6 @@ let is_allowed_proposer (global_state : State.t) (height : height)
 let i_am_proposer (global_state : State.t) (height : height) (round : round) =
   is_allowed_proposer global_state height round global_state.identity.t
 
-(** Tendermint as proof-of-authority *)
 let get_weight (global_state : State.t) (address : Key_hash.t) =
   if Validators.is_validator global_state.protocol.validators address then
     1

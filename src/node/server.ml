@@ -11,7 +11,9 @@ let start ~initial =
     Tendermint.make initial (Int64.add initial.protocol.block_height 1L) in
   match !global_server with
   | Some _ -> failwith "start should be called just once"
-  | None -> global_server := Some { state = initial; consensus; timeout = Lwt.return_unit }
+  | None ->
+    global_server :=
+      Some { state = initial; consensus; timeout = Lwt.return_unit }
 let get () =
   match !global_server with
   | Some state -> state
