@@ -22,8 +22,7 @@ val make : State.t -> height -> t
 val is_valid_consensus_op :
   State.t -> sidechain_consensus_op -> (unit, string) result
 
-val add_consensus_op :
-  t -> node_identifier -> sidechain_consensus_op -> t Lwt.t
+val add_consensus_op : t -> node_identifier -> sidechain_consensus_op -> t Lwt.t
 
 val exec_consensus : t -> t
 
