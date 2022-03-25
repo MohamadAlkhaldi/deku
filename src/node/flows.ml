@@ -504,18 +504,15 @@ let received_consensus_step state update_state operation sender hash
     (Printf.sprintf "received consensus operation %s from %s"
        (Tendermint_internals.string_of_op operation)
        (Tendermint_internals.short sender));
-  (* TODO: check message_signature *)
+  (* TODO: ConsensusStep2 check message_signature *)
   let open Tendermint in
-  (* Tendermint_internals.debug state
-     (Printf.sprintf "received consensus step %s"
-        (Tendermint_internals.string_of_op operation)); *)
+  (* TODO: ConsensusStep2 more checks using this:
+     let check_state_root_hash block =
+       block_matches_current_state_root_hash state block
+       || block_matches_next_state_root_hash state block in
+  *)
 
-  (* TODO: more checks *)
-  let check_state_root_hash block =
-    block_matches_current_state_root_hash state block
-    || block_matches_next_state_root_hash state block in
-
-  (* FIXME: this is a poor man's fast sync protocol. This should be implemented somewhere else, as
+  (* FIXME: ConsensusStep2 this is a poor man's fast sync protocol. This should be implemented somewhere else, as
      it creates a vulnerability and Tendermint can get stuck as it is implemented now. *)
   let%await state, consensus =
     let height = state.Node.protocol.Protocol.block_height in
@@ -537,11 +534,11 @@ let received_consensus_step state update_state operation sender hash
       Lwt.return (state', consensus')
     | _ -> Lwt.return (state, !get_consensus ()) in
 
-  (* TODO: if received a block, check state root hash *)
+  (* TODO: ConsensusStep2 if received a block, check state root hash *)
   match is_valid_consensus_op state operation with
   | Ok () ->
-    (* TODO: Tendermint, check if already seen this message? AKA enforce unique in input_log? *)
-    (* TODO: Tendermint: add and check sender signature? *)
+    (* TODO: ConsensusStep2, check if already seen this message? AKA enforce unique in input_log? *)
+    (* TODO: ConsensusStep2: add and check sender signature? *)
     let consensus = !get_consensus () in
     prerr_endline
       (Printf.sprintf "**** We're here with state of height %Ld"

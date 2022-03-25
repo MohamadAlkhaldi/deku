@@ -171,7 +171,7 @@ let rec exec_consensus node =
   | _ ->
     (* Start the non-started clocks *)
     IntSet.map_inplace
-      (fun height clocks ->
+      (fun _height clocks ->
         List.map
           (fun c -> start_clock node c.Clock.height c.Clock.round c)
           clocks)
@@ -221,9 +221,9 @@ let get_block_opt cstate height =
   | Some (Block b, round) -> Some (b, round)
   | _ -> None
 
-let height_from_op op = height op
+(* let height_from_op op = height op *)
 
-let round_from_op op = round op
+(* let round_from_op op = round op *)
 
 let get_block cstate height =
   match OutputLog.get cstate.output_log (Int64.sub height 1L) with
