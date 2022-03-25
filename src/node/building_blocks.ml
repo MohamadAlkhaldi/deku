@@ -120,7 +120,7 @@ let signatures_required state =
   let number_of_validators = Validators.length state.Node.protocol.validators in
   let open Float in
   to_int (ceil (of_int number_of_validators *. (2.0 /. 3.0)))
-let append_signature state update_state ~hash ~signature ~round =
+let append_signature state update_state ~hash ~signature =
   let block_pool =
     Block_pool.append_signature
       ~signatures_required:(signatures_required state)
