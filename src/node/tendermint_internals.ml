@@ -62,13 +62,6 @@ let step_of_op = function
   | PrevoteOP _ -> Prevote
   | PrecommitOP _ -> Precommit
 
-let get_block = function
-  | ProposalOP (_, _, Block b, _)
-  | PrevoteOP (_, _, Block b)
-  | PrecommitOP (_, _, Block b) ->
-    Some b
-  | _ -> None
-
 let string_of_op = function
   | ProposalOP (height, round, value, vround) ->
     Printf.sprintf "<PROPOSAL, %Ld, %d, %s, %d>" height round
@@ -78,11 +71,6 @@ let string_of_op = function
   | PrecommitOP (height, round, value) ->
     Printf.sprintf "<PRECOMMIT, %Ld, %d, %s>" height round
       (string_of_value value)
-
-let string_of_step = function
-  | Proposal -> "PROPOSAL"
-  | Prevote -> "PREVOTE"
-  | Precommit -> "PRECOMMIT"
 
 let height = function
   | ProposalOP (h, _, _, _)
@@ -96,25 +84,20 @@ let round = function
   | PrecommitOP (_, r, _) ->
     r
 
-let value_of_operation = function
-  | ProposalOP (_, _, v, _)
-  | PrevoteOP (_, _, v)
-  | PrecommitOP (_, _, v) ->
-    v
-
 let hash_of_consensus_op consensus_op sender =
   let s1 = string_of_op consensus_op in
   let s2 = Crypto.Key_hash.to_string sender in
   Crypto.BLAKE2B.hash (s1 ^ s2)
 
-let compute_hash block_hash height round =
-  let s1 = Crypto.BLAKE2B.to_raw_string block_hash in
-  let s2 = Int64.to_string height in
-  let s3 = string_of_int round in
-  Crypto.BLAKE2B.hash (s1 ^ s2 ^ s3)
+(* Is this still needed?
+   let compute_hash block_hash height round =
+     let s1 = Crypto.BLAKE2B.to_raw_string block_hash in
+     let s2 = Int64.to_string height in
+     let s3 = string_of_int round in
+     Crypto.BLAKE2B.hash (s1 ^ s2 ^ s3) *)
 
 let hash_of_consensus_value consensus_op =
-  let height, round, value =
+  let _, _, value =
     match consensus_op with
     | ProposalOP (h, r, v, _)
     | PrevoteOP (h, r, v)

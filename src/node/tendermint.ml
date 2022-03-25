@@ -78,16 +78,12 @@ let tendermint_step node =
         ([], network_actions, RestartAtRound round)
       (* Add a new clock to the scheduler *)
       | Some (Schedule c) ->
-        (* debug node.node_state
-           ("Should start clock for step " ^ string_of_step c.Clock.step); *)
         let cs =
           IntSet.find_opt node.clocks height |> Option.value ~default:[] in
         IntSet.add node.clocks height (c :: cs);
         exec_procs rest still_active network_actions
     end
     | [] -> (still_active, network_actions, DontRestart) in
-  (* let () = debug node.node_state (Printf.sprintf "I have %d processes to execute" (List.length
-     node.procs)) in *)
   let still_active, network_actions, should_restart =
     exec_procs node.procs [] [] in
   (* TODO: I don't want this to be mutable *)
@@ -192,8 +188,6 @@ and start_clock node clock_height clock_round clock =
   if clock.Clock.started then
     clock
   else begin
-    (* debug node.node_state (Printf.sprintf "Starting clock for step %s height %Ld round %d"
-       (string_of_step clock.Clock.step) clock_height clock_round); *)
     async (fun () ->
         Lwt_unix.sleep 2.
         (* FIXME (float_of_int clock.Clock.time) *) >>= fun () ->
@@ -211,8 +205,6 @@ and start_clock node clock_height clock_round clock =
         if current_height > clock_height || current_round > clock_round then
           Lwt.return_unit
         else
-          (* let () = debug node.node_state (Printf.sprintf "Executing the clock for step %s height %Ld round %d"
-             (string_of_step clock.Clock.step) clock_height clock_round) in *)
           let input_log = node.input_log in
           let _ = add_to_input input_log clock_height clock.Clock.step Timeout in
           let new_node = exec_consensus node in
