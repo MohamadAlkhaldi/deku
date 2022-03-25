@@ -122,7 +122,7 @@ let request_block ~hash =
       block
   with
   | Ok () -> await ()
-  | Error err ->
+  | Error _err ->
     prerr_endline "Error !";
     await ()
 (* ) *)
@@ -396,7 +396,7 @@ let already_committed state block =
   state.Node.protocol.Protocol.last_block_hash = block.Block.hash
 
 (** Apply a block to Deku and commit the *previous previous block* to Tezos; does not check that the block should indeed be committed. *)
-let commit state update_state ~block ~hash ~height ~round =
+let commit state update_state ~block ~hash ~height ~round:_ =
   let prev_protocol = state.Node.protocol in
   let is_new_state_root_hash =
     not
@@ -453,10 +453,10 @@ let commit state update_state ~block ~hash ~height ~round =
   Result.ok ()
 
 (** Manages the block pool and signatures when we received a Precommit op (applies changes post-consensus) *)
-let received_precommit_block state update_state ~block ~sender ~hash
+let received_precommit_block state update_state ~block ~sender:_ ~hash
     ~hash_signature ~consensus_signature =
   let module CI = Tendermint_internals in
-  let height, round = (block.Block.block_height, block.Block.consensus_round) in
+  let height, _ = (block.Block.block_height, block.Block.consensus_round) in
   (* We check for the signature of the *hash* of the received hash, as this
      is also what Tezos does. *)
   let%assert () =
@@ -475,13 +475,13 @@ let received_precommit_block state update_state ~block ~sender ~hash
   let state =
     append_signature state update_state ~hash ~signature:hash_signature in
   match Tendermint.get_block_opt (!get_consensus ()) height with
-  | Some (block, round) when not (block.Block.hash = hash) ->
+  | Some (block, _) when not (block.Block.hash = hash) ->
     Result.Error
       (`Invalid_block
         (Printf.sprintf
            "Block hash does not match decision made by consensus, %s"
            (Crypto.BLAKE2B.to_string block.Block.hash)))
-  (* TODO: deplacer | Some (block, _round) when not (check_state_root_hash block) ->
+  (* TODO: move | Some (block, _round) when not (check_state_root_hash block) ->
      Result.error `Invalid_state_root_hash *)
   | Some (block, _) ->
     (* Consensus has been reached normally for the received block *)
@@ -515,14 +515,14 @@ let received_consensus_step state update_state operation sender hash
 
   (* FIXME: ConsensusStep2 this is a poor man's fast sync protocol. This should be implemented somewhere else, as
      it creates a vulnerability and Tendermint can get stuck as it is implemented now. *)
-  let%await state, consensus =
+  let%await state, _consensus =
     let height = state.Node.protocol.Protocol.block_height in
     match operation with
     | ProposalOP (height', _, Block b, _) when height' > Int64.add height 1L ->
       prerr_endline
         (Printf.sprintf "Activating fast sync from height %Ld to height %Ld"
            height height');
-      let%await state = request_previous_blocks state b in
+      (* let%await state = request_previous_blocks state b in *)
       let state' = !get_state () in
       (* Start Tendermint process at the right height *)
       let current_height = height' in
