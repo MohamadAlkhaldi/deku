@@ -122,8 +122,6 @@ module OutputLog = struct
     | Some (block', _) -> block = block'
 end
 
-type output_log = OutputLog.t
-
 (************************************ Selection on input_log ************************************)
 
 let on_proposal (f : proposal_content -> 'a option) = function

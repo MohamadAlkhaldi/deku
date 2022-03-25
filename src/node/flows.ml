@@ -185,16 +185,15 @@ let try_to_produce_block state update_state =
   let block = produce_block state in
   let signature = sign ~key:state.identity.secret block in
   let state =
-    append_signature state update_state ~signature ~hash:block.hash
-      ~height:(-1L) ~round:(-1) in
+    append_signature state update_state ~signature ~hash:block.hash ~round:(-1)
+  in
   broadcast_block_and_signature state ~block ~signature;
   Ok ()
 let try_to_sign_block state update_state block =
   if is_signable state block then (
     let signature = sign ~key:state.identity.secret block in
     broadcast_signature state ~hash:block.hash ~signature;
-    append_signature state update_state ~hash:block.hash ~signature
-      ~height:(-1L) ~round:(-1))
+    append_signature state update_state ~hash:block.hash ~signature ~round:(-1))
   else
     state
 let commit_state_hash state =
@@ -316,9 +315,7 @@ let received_signature state update_state ~hash ~signature =
   let%assert () =
     (`Already_known_signature, not (is_known_signature state ~hash ~signature))
   in
-  let state =
-    append_signature state update_state ~hash ~signature ~height:(-1L)
-      ~round:(-1) in
+  let state = append_signature state update_state ~hash ~signature ~round:(-1) in
   let%assert () =
     ( `Added_signature_not_signed_enough_to_request,
       Block_pool.is_signed ~hash state.Node.block_pool ) in
@@ -477,8 +474,8 @@ let received_precommit_block state update_state ~block ~sender ~hash
      - DDOS risk
      - use case?  (if none: just save signatures when Tendermint agrees/is undecided) (possible use case: slashing?)*)
   let state =
-    append_signature state update_state ~hash ~signature:hash_signature ~height
-      ~round in
+    append_signature state update_state ~hash ~signature:hash_signature ~round
+  in
   match Tendermint.get_block_opt (!get_consensus ()) height with
   | Some (block, round) when not (block.Block.hash = hash) ->
     Result.Error
