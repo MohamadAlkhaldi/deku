@@ -491,7 +491,7 @@ let () =
               ~entrypoint:"default" ~value:Michelson.unit in
           let taquito_forged_bytes =
             "f6e43992b2f45aedbfdc7f5f6a21aa68c99973afffa0ddbe8b98e33672dec6396c001004051072b588b39e25b9f4dbf4673abcd63147a403b4dfc901970a000001533ace00d71497d23fdac2a8809bb1e9df14c579000048a432efc5ef0e700c2f696957996e90194787995d43826b18ade1823d05857f35787f4e7a223d3ea226f22b1809ee56a9046bd313f547e3746fb46bc8ed3803"
-          in†
+          in
           (expect.string forged_bytes).toEqual taquito_forged_bytes))
 let () =
   describe "pack" (fun { test; _ } ->
@@ -583,7 +583,7 @@ let () =
           in
           let hash = BLAKE2B.to_string hash in
           (expect.string hash).toEqual
-            "7cb600c19817b899d4c28c521dd9ebf95f688e1444afe7d0e7740bebe848b030");
+            "305db8c9f9100ade89982d6d07e51991679b7128b43f20fa2bcb733743fa6098");
       test "hash_withdraw_handle" (fun { expect; _ } ->
           let hash =
             hash_withdraw_handle ~id:(Z.of_int 0)
