@@ -373,14 +373,14 @@ let handle_node_delay (height : height) (_round : round)
   let round = consensus_state.Tendermint_internals.round in
   let apply_round_condition (actions : MySet.t) : MySet.t =
     MySet.filter (fun (_, r) -> r > round) actions in
-  let do_something (consensus_state : consensus_state) (common_set : MySet.t) =
+  let do_something (common_set : MySet.t) =
     let _, round = MySet.choose common_set in
     Some (RestartTendermint (height, round)) in
   let filtered_actions = apply_round_condition actions in
   if filtered_actions = MySet.empty then
     None
   else
-    do_something consensus_state filtered_actions
+    do_something filtered_actions
 
 let all_processes : process list =
   [
