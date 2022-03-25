@@ -491,7 +491,7 @@ let () =
               ~entrypoint:"default" ~value:Michelson.unit in
           let taquito_forged_bytes =
             "f6e43992b2f45aedbfdc7f5f6a21aa68c99973afffa0ddbe8b98e33672dec6396c001004051072b588b39e25b9f4dbf4673abcd63147a403b4dfc901970a000001533ace00d71497d23fdac2a8809bb1e9df14c579000048a432efc5ef0e700c2f696957996e90194787995d43826b18ade1823d05857f35787f4e7a223d3ea226f22b1809ee56a9046bd313f547e3746fb46bc8ed3803"
-          in
+          in†
           (expect.string forged_bytes).toEqual taquito_forged_bytes))
 let () =
   describe "pack" (fun { test; _ } ->
@@ -567,7 +567,7 @@ let () =
             "6d6ecacbc858e3a89d87f0d9bd76b0c11b07aa95191129104395d17c6c96d36b");
       test "hash_block" (fun { expect; _ } ->
           let hash =
-            hash_block ~block_height:121L ~consensus_round:1
+            hash_block ~block_height:121L ~consensus_round:0
               ~block_payload_hash:
                 (hash_exn
                    "2d92960a592c56de3046e200969c230a2eda71fc4b775e0cc09a189e5ddc5dbd")
