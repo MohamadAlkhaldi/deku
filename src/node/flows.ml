@@ -320,7 +320,8 @@ let received_signature state update_state ~hash ~signature =
   match Block_pool.find_block ~hash state.Node.block_pool with
   | Some block -> block_added_to_the_pool state update_state block
   | None ->
-    request_block ~hash;
+    let _ = request_block ~hash in
+    (* FIXME: this is a hack. *)
     Ok ()
 let parse_internal_tezos_transaction transaction =
   match transaction with
