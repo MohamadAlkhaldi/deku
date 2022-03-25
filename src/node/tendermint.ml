@@ -220,12 +220,3 @@ let get_block_opt cstate height =
   match OutputLog.get cstate.output_log height with
   | Some (Block b, round) -> Some (b, round)
   | _ -> None
-
-(* let height_from_op op = height op *)
-
-(* let round_from_op op = round op *)
-
-let get_block cstate height =
-  match OutputLog.get cstate.output_log (Int64.sub height 1L) with
-  | Some (Block b, _) -> b
-  | _ -> failwith (Printf.sprintf "No block here %Ld" height)
