@@ -567,7 +567,7 @@ let () =
             "6d6ecacbc858e3a89d87f0d9bd76b0c11b07aa95191129104395d17c6c96d36b");
       test "hash_block" (fun { expect; _ } ->
           let hash =
-            hash_block ~block_height:121L
+            hash_block ~block_height:121L ~consensus_round:1
               ~block_payload_hash:
                 (hash_exn
                    "2d92960a592c56de3046e200969c230a2eda71fc4b775e0cc09a189e5ddc5dbd")
