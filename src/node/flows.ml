@@ -518,7 +518,7 @@ let received_consensus_step state update_state operation sender hash
   let%await state, _consensus =
     let height = state.Node.protocol.Protocol.block_height in
     match operation with
-    | ProposalOP (height', _, Block b, _) when height' > Int64.add height 1L ->
+    | ProposalOP (height', _, Block _, _) when height' > Int64.add height 1L ->
       prerr_endline
         (Printf.sprintf "Activating fast sync from height %Ld to height %Ld"
            height height');
