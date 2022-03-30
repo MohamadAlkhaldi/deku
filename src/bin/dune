@@ -23,5 +23,12 @@
 
 (env
  (static
-  (ocamlopt_flags
-   (:standard -O2 -ccopt -static))))
+  (flags
+   (:standard
+    -O2
+    -ccopt
+    -static
+    -ccopt
+    %{env:CFLAGS=/lib}
+    -cclib
+    -L%{env:LD_LIBRARY_PATH=/lib}))))
