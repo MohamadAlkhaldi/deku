@@ -39,6 +39,11 @@ For example: `dune exec -- ./benchmarks/benchmarks.exe gas` will return the benc
 
     - Execute: `esy b dune exec ./benchmarks/benchmarks.exe subcommand`
 
+- script:
+    ./benchmarks/bench_vm/scripts/benchmark.sh
+
+Will run all existing benchmarks and output results into ./benchmarks/bench_vm/results.
+
 ## Understanding the results
 
 - Time: number of nano secs taken
