@@ -38,6 +38,7 @@
     "@taquito/signer": "^11.0.1",
     "@taquito/rpc": "^11.0.1",
     "webpack": "^5.47.1",
+    "@opam/piaf": "*",
     "@opam/ppx_blob": "*",
     "@opam/ppx_deriving": "*",
     "@opam/ppx_deriving_yojson": "*",
