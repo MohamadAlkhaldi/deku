@@ -1,8 +1,6 @@
 [] Profiling
 
-[] benchmarking
-
-* [] benchmarking with different gas numbers
+[X] benchmarking with different gas numbers
 
 [X] TODO's
 
@@ -11,13 +9,17 @@
 
 [] infra
 
+* [] update script as benchmark count grows
+
+* [] add options for targeting specific benchmarks 
+
 * [] add ppx_bench
 
-* [] script for benchmarking
+* [X] script for benchmarking
 
 ** [X] exporting results
 
-** [] plotting results
+** [X] plotting results
 
 [] run benches
 
