@@ -122,23 +122,26 @@ let node folder =
   Node.Server.start ~initial:node;
   Dream.initialize_log ~level:`Warning ();
   let port = Node.Server.get_port () |> Option.get in
-  Dream.run ~interface:"0.0.0.0" ~port
-  @@ Dream.router
-       [
-         handle_block_level;
-         handle_received_block_and_signature;
-         handle_received_signature;
-         handle_block_by_hash;
-         handle_protocol_snapshot;
-         handle_request_nonce;
-         handle_register_uri;
-         handle_receive_user_operation_gossip;
-         handle_receive_consensus_operation;
-         handle_withdraw_proof;
-         handle_ticket_balance;
-         handle_trusted_validators_membership;
-       ]
-  @@ Dream.not_found
+  Lwt.all [
+    Dream.serve ~interface:"0.0.0.0" ~port
+    @@ Dream.router
+        [
+          handle_block_level;
+          handle_received_block_and_signature;
+          handle_received_signature;
+          handle_block_by_hash;
+          handle_protocol_snapshot;
+          handle_request_nonce;
+          handle_register_uri;
+          handle_receive_user_operation_gossip;
+          handle_receive_consensus_operation;
+          handle_withdraw_proof;
+          handle_ticket_balance;
+          handle_trusted_validators_membership;
+        ]
+    @@ Dream.not_found;
+    Metrics.Dream_app.serve (Some 9000);
+  ] |> Lwt_main.run |> ignore
 
 (* TODO: https://github.com/ocaml/ocaml/issues/11090 *)
 let () = Domain.set_name "deku-node"

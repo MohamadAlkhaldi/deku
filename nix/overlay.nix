@@ -1,6 +1,7 @@
 final: prev:
-let disableCheck = package:
-  package.overrideAttrs (o: { doCheck = false; });
+let 
+  inherit (prev) lib stdenv;
+  disableCheck = package: package.overrideAttrs (o: { doCheck = false; });
 in
 {
   ocamlPackages = prev.ocaml-ng.ocamlPackages_5_00.overrideScope' (oself: osuper: rec {
@@ -38,5 +39,41 @@ in
         sha256 = "13c53b1cxkq2nj444655skw5a1mcxzbaqwqsqjf7jbwradb3hmxa";
       };
     });
+
+    asetmap = stdenv.mkDerivation rec {
+      version = "0.8.1";
+      pname = "asetmap";
+      src = prev.fetchurl {
+        url = "https://github.com/dbuenzli/asetmap/archive/refs/tags/v0.8.1.tar.gz";
+        sha256 = "051ky0k62xp4inwi6isif56hx5ggazv4jrl7s5lpvn9cj8329frj";
+      };
+
+      nativeBuildInputs = with osuper; [
+        topkg
+        findlib
+        ocamlbuild
+        ocaml
+      ];
+
+      inherit (osuper.topkg) buildPhase installPhase;
+    };
+
+    prometheus = osuper.buildDunePackage rec {
+      version = "1.1.0";
+      pname = "prometheus";
+      src = prev.fetchurl {
+        url = "https://github.com/mirage/prometheus/releases/download/v1.1/prometheus-v1.1.tbz";
+        sha256 = "1r4rylxmhggpwr1i7za15cpxdvgxf0mvr5143pvf9gq2ijr8pkzv";
+      };
+
+      propagatedBuildInputs = with osuper; [
+        astring
+        asetmap
+        fmt
+        re
+        lwt
+        alcotest
+      ];
+    };
   });
 }
