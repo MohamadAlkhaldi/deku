@@ -39,7 +39,8 @@
     "@opam/ppx_blob": "*",
     "@opam/secp256k1-internal": "*",
     "@opam/domainslib": "0.4.1",
-    "@opam/data-encoding": "*"
+    "@opam/data-encoding": "*",
+    "@opam/prometheus": "*"
   },
   "devDependencies": {
     "prettier": "^2.3.2",
