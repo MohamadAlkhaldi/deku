@@ -339,7 +339,7 @@ let sign_block node_folder block_hash =
       validators_uris
       { hash = block_hash; signature } in
   Lwt.return (`Ok ())
-let sign_block_term =
+let sign_block =
   let folder_node =
     let docv = "folder_node" in
     let doc = "The folder where the node lives." in
@@ -571,7 +571,7 @@ let () =
          (create_transaction, info_create_transaction);
          (withdraw, info_withdraw);
          (withdraw_proof, info_withdraw_proof);
-         (sign_block_term, info_sign_block);
+         (sign_block, info_sign_block);
          (produce_block, info_produce_block);
          (setup_identity, info_setup_identity);
          (setup_tezos, info_setup_tezos);
