@@ -189,7 +189,7 @@
     },
     "@opam/dune": "EduardoRFS/dune:dune.opam#b9d9eb13366d1edcdfbdb3afe3afa5c08ff87e54",
     "@opam/prometheus-app-pure": {
-      "source": "marigold-dev/prometheus-web:prometheus-app-pure.opam#a52d1a9773d9e97778e5ae17747d820c5c4c885c",
+      "source": "callistonianembrace/prometheus-web:prometheus-app-pure.opam#384fef5d827b3f422b53446eb74df545f4ef01d4",
       "override": {
         "dependencies": {
           "@opam/prometheus": "1.1",
