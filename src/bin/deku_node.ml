@@ -150,5 +150,5 @@ let node =
     let open Arg in
     required & pos 0 (some string) None & info [] ~doc ~docv in
   let open Term in
-  const node $ folder_node
+  Cli_helpers.const_log node $ folder_node
 let () = Term.exit @@ Term.eval (node, Term.info "deku-node")

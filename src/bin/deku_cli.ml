@@ -127,7 +127,7 @@ let create_wallet () =
   await (`Ok ())
 let create_wallet =
   let open Term in
-  lwt_ret (const create_wallet $ const ())
+  lwt_ret (Cli_helpers.const_log create_wallet $ const ())
 let info_create_transaction =
   let doc =
     Printf.sprintf
@@ -194,7 +194,7 @@ let create_transaction =
     required & pos 4 (some ticket) None & info [] ~docv:"ticket" ~doc in
   let open Term in
   lwt_ret
-    (const create_transaction
+    (Cli_helpers.const_log create_transaction
     $ folder_node
     $ address_from
     $ address_to
@@ -255,7 +255,7 @@ let withdraw =
     required & pos 4 (some ticket) None & info [] ~docv:"ticket" ~doc in
   let open Term in
   lwt_ret
-    (const withdraw
+    (Cli_helpers.const_log withdraw
     $ folder_node
     $ address_from
     $ tezos_address
@@ -319,7 +319,10 @@ let withdraw_proof =
   in
   let open Term in
   lwt_ret
-    (const withdraw_proof $ folder_dest $ operation_hash $ contract_callback)
+    (Cli_helpers.const_log withdraw_proof
+    $ folder_dest
+    $ operation_hash
+    $ contract_callback)
 let info_sign_block =
   let doc =
     "Sign a block hash and broadcast to the network manually, useful when the \
@@ -347,7 +350,7 @@ let sign_block_term =
     let open Arg in
     required & pos 1 (some hash) None & info [] ~doc in
   let open Term in
-  lwt_ret (const sign_block $ folder_node $ block_hash)
+  lwt_ret (Cli_helpers.const_log sign_block $ folder_node $ block_hash)
 let info_produce_block =
   let doc =
     "Produce and sign a block and broadcast to the network manually, useful \
@@ -376,7 +379,7 @@ let produce_block =
     let open Arg in
     required & pos 0 (some string) None & info [] ~doc ~docv in
   let open Term in
-  lwt_ret (const produce_block $ folder_node)
+  lwt_ret (Cli_helpers.const_log produce_block $ folder_node)
 let ensure_folder folder =
   let%await exists = Lwt_unix.file_exists folder in
   if exists then
@@ -412,7 +415,7 @@ let setup_identity =
     let open Arg in
     required & opt (some uri) None & info ["uri"] ~doc ~docv in
   let open Term in
-  lwt_ret (const setup_identity $ folder_dest $ self_uri)
+  lwt_ret (Cli_helpers.const_log setup_identity $ folder_dest $ self_uri)
 let info_setup_tezos =
   let doc = "Setup Tezos identity" in
   Term.info "setup-tezos" ~version:"%%VERSION%%" ~doc ~exits ~man
@@ -462,7 +465,7 @@ let setup_tezos =
     & info ["unsafe_tezos_required_confirmations"] ~doc ~docv in
   let open Term in
   lwt_ret
-    (const setup_tezos
+    (Cli_helpers.const_log setup_tezos
     $ folder_dest
     $ tezos_node_uri
     $ tezos_secret
@@ -492,7 +495,7 @@ let self =
     let open Arg in
     required & pos 0 (some string) None & info [] ~doc ~docv in
   let open Term in
-  lwt_ret (const self $ folder_dest)
+  lwt_ret (Cli_helpers.const_log self $ folder_dest)
 let info_add_trusted_validator =
   let doc =
     "Helps node operators maintain a list of trusted validators they verified \
@@ -523,7 +526,10 @@ let validator_address =
   required & pos 1 (some address_implicit) None & info [] ~docv ~doc
 let add_trusted_validator =
   let open Term in
-  lwt_ret (const add_trusted_validator $ folder_node $ validator_address)
+  lwt_ret
+    (Cli_helpers.const_log add_trusted_validator
+    $ folder_node
+    $ validator_address)
 let info_remove_trusted_validator =
   let doc =
     "Helps node operators maintain a list of trusted validators they verified \
@@ -549,7 +555,10 @@ let remove_trusted_validator node_folder address =
   await (`Ok ())
 let remove_trusted_validator =
   let open Term in
-  lwt_ret (const remove_trusted_validator $ folder_node $ validator_address)
+  lwt_ret
+    (Cli_helpers.const_log remove_trusted_validator
+    $ folder_node
+    $ validator_address)
 
 (* TODO: https://github.com/ocaml/ocaml/issues/11090 *)
 let () = Domain.set_name "deku-cli"
