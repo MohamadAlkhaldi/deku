@@ -1,5 +1,7 @@
 (* Most of this code is borrowed from https://github.com/mirage/prometheus/blob/master/app/prometheus_unix.ml which is under the Apache license *)
 
+(* This file is a copy prometheus_dream.ml *)
+
 open Prometheus
 open Prometheus_app
 
@@ -40,6 +42,7 @@ let () =
     CollectorRegistry.(register default) info collector in
   List.iter add Unix_runtime.metrics
 
+(* this change to add config inside *)
 let serve = function
   | None -> Lwt.return ()
   | Some port ->
