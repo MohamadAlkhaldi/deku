@@ -170,6 +170,6 @@ let node =
     let open Arg in
     required & pos 0 (some string) None & info [] ~doc ~docv in
   let open Term in
-  let _ = const Metrics.Dream_app.serve $ Metrics.Dream_app.opts in
+  let _ = const Prometheus_dream.serve $ Prometheus_dream.opts in
   const node $ folder_node
 let () = Term.exit @@ Term.eval (node, Term.info "deku-node")

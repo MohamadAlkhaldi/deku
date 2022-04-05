@@ -1,4 +1,4 @@
-module Prometheus = Prometheus_app_pure
-module Dream_app = Prometheus_dream
+module Prometheus = Prometheus
+module Dream_app = Prometheus
 module Config = Config
 module Blocks = Blocks

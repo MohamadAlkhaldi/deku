@@ -165,7 +165,7 @@ let try_to_produce_block state update_state =
   let signature = sign ~key:state.identity.secret block in
   let state = append_signature state update_state ~signature ~hash:block.hash in
   broadcast_block_and_signature state ~block ~signature;
-  Metrics.Prometheus.Counter.inc_one Metrics.Blocks.blocks_produced_total;
+  Prometheus.Counter.inc_one Metrics.Blocks.blocks_produced_total;
   Ok ()
 let try_to_sign_block state update_state block =
   if is_signable state block then (
