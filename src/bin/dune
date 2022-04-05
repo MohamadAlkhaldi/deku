@@ -16,8 +16,8 @@
 
 (library
  (name bin_common)
- (modules Files Node_state)
- (libraries lwt lwt.unix node helpers)
+ (modules Files Node_state Cli_helpers)
+ (libraries lwt lwt.unix node helpers logs logs.fmt fmt.cli logs.cli fmt.tty)
  (preprocess
   (pps ppx_deriving_yojson ppx_let_binding)))
 
