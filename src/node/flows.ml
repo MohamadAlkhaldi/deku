@@ -41,7 +41,7 @@ let string_of_error = function
   | `Snapshots_with_invalid_hash -> "Snapshots_with_invalid_hash"
 
 let print_error err =
-  Format.eprintf "\027[31mError: %s\027[m\n%!" (string_of_error err)
+  Logs.err (fun m -> m "\027[31mError: %s\027[m\n" (string_of_error err))
 
 type flag_node =
   [ `Invalid_block
@@ -129,7 +129,7 @@ let rec request_protocol_snapshot tries =
 let () =
   Lwt.async_exception_hook :=
     fun exn ->
-      Printexc.to_string exn |> Format.eprintf "global_exception: %s\n%!";
+      Logs.err (fun m -> Printexc.to_string exn |> m "global_exception: %s\n");
       Printexc.print_backtrace stderr
 let pending = ref false
 let load_snapshot snapshot_data =

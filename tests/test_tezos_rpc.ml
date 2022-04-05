@@ -46,7 +46,7 @@ let listen_to_chain_heads () =
     Lwt_stream.iter
       (fun header ->
         let hash = header.Tezos_rpc.Block_header.hash in
-        Format.eprintf "header.hash: %s\n%!" (Block_hash.to_string hash))
+        Logs.app (fun m -> m "header.hash: %s\n" (Block_hash.to_string hash)))
       stream
   | Error err -> failwith_err err
 

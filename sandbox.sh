@@ -180,7 +180,7 @@ start_deku_cluster() {
   sleep 1
 
   echo "Producing a block"
-  HASH=$(deku-cli produce-block "$data_directory/0" | awk '{ print $2 }')
+  HASH=$(deku-cli produce-block "$data_directory/0" | tail -n 1 | cut -d ' ' -f 2)
 
   sleep 0.1
 
