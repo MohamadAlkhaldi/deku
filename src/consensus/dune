@@ -1,0 +1,11 @@
+(library
+ (name consensus)
+ (libraries
+  ; local
+  chelper
+  ; deku
+  crypto
+  ; global
+  )
+ (preprocess
+  (pps ppx_deriving.ord)))
