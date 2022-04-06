@@ -43,7 +43,8 @@
     "@opam/secp256k1-internal": "*",
     "@opam/core_bench": "*",
     "@opam/domainslib": "0.4.1",
-    "@opam/data-encoding": "*"
+    "@opam/data-encoding": "*",
+    "@opam/prometheus-dream": "*"
   },
   "devDependencies": {
     "prettier": "^2.3.2",
@@ -264,6 +265,23 @@
     "@opam/core_unix": "EduardoRFS/core_unix:core_unix.opam#e765288323c8d54732e253e34daea6da9b824173",
     "@opam/timezone": "janestreet/timezone:timezone.opam#e7a86ae5c833de8615265b9d8f598653b5593b91",
     "@opam/ocaml_intrinsics": "janestreet/ocaml_intrinsics:ocaml_intrinsics.opam#98af7a639c1b4a50c9e4b04e9b070a28129ca6a9",
-    "@opam/sexp_pretty": "EduardoRFS/sexp_pretty:sexp_pretty.opam#50f666f9c464ab8e080f585a0ce72d5b0da43452"
+    "@opam/sexp_pretty": "EduardoRFS/sexp_pretty:sexp_pretty.opam#50f666f9c464ab8e080f585a0ce72d5b0da43452",
+    "@opam/prometheus-app-pure": {
+      "source": "marigold-dev/prometheus-web:prometheus-app-pure.opam#9053674857f12c9d7983d0c23e58277bf0aeaab7",
+      "override": {
+        "dependencies": {
+          "@opam/prometheus": "1.1",
+          "@opam/cmdliner": "1.0.4"
+        }
+      }
+    },
+    "@opam/prometheus-dream": {
+      "source": "marigold-dev/prometheus-web:prometheus-dream.opam#9053674857f12c9d7983d0c23e58277bf0aeaab7",
+      "override": {
+        "dependencies": {
+          "@opam/cmdliner": "1.0.4"
+        }
+      }
+    }
   }
 }
