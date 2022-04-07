@@ -86,14 +86,18 @@ let apply_block state block =
     List.fold_left
       (fun results (hash, receipt) -> BLAKE2B.Map.add hash receipt results)
       state.recent_operation_receipts receipts in
-  let applied_blocks = block :: state.applied_blocks in
+  (* TODO: we might want to use a monotonic clock so we don't get weird things like
+     negative block rates. *)
+  let timestamp = Unix.time () in
+  let operation_count = List.length block.operations in
+  Metrics.Througput.collect_block_metrics ~timestamp ~operation_count;
   Ok
     {
       state with
       protocol;
       recent_operation_receipts;
       snapshots;
-      applied_blocks;
+      applied_blocks = block :: state.applied_blocks;
     }
 let signatures_required state =
   let number_of_validators = Validators.length state.protocol.validators in
