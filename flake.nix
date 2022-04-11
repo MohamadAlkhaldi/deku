@@ -61,5 +61,9 @@
             program = "${deku}/bin/deku-node";
           };
         };
+
+        hydraJobs = {
+          inherit deku;
+        };
       });
 }
