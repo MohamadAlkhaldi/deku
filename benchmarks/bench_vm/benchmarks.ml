@@ -14,8 +14,9 @@ let main () =
        [
          ("gas", Bench_gas.command);
          ("prim", Bench_prim.command);
-         ("simple_expr", Bench_simple_expr.command);
+         ("simple-expr", Bench_simple_expr.command);
          ("recursion", Bench_recursion.command);
+         ("voting-contract", Bench_voting_contract.command)
        ])
 
 let () = main ()
