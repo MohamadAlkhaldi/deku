@@ -131,16 +131,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1649228968,
-        "narHash": "sha256-DijCMvp/la/45oBLruMoJV5DV+E34wyZ3O5BuIYaJWs=",
+        "lastModified": 1649230100,
+        "narHash": "sha256-wRErQXbCKLKMmhXdA+Fyzbck4QZrJyCbgqjbKLzGKdU=",
         "owner": "marigold-dev",
         "repo": "prometheus-web",
-        "rev": "f030ab2ad4472e8282844028925a1dfe814af9a1",
+        "rev": "8f75d055edc053e8bb1354dcf5c9503fe2850380",
         "type": "github"
       },
       "original": {
         "owner": "marigold-dev",
-        "ref": "ulrikstrid/nix-stuff",
         "repo": "prometheus-web",
         "type": "github"
       }

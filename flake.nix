@@ -13,8 +13,7 @@
     ocaml-overlays.url = "github:anmonteiro/nix-overlays/ulrikstrid/hydra-test";
     ocaml-overlays.inputs.nixpkgs.follows = "nixpkgs";
 
-    prometheus-web.url =
-      "github:marigold-dev/prometheus-web/ulrikstrid/nix-stuff";
+    prometheus-web.url = "github:marigold-dev/prometheus-web";
     prometheus-web.inputs.nixpkgs.follows = "nixpkgs";
     prometheus-web.inputs.ocaml-overlay.follows = "ocaml-overlays";
 
@@ -31,7 +30,7 @@
           overlays = [
             ocaml-overlays.overlay
             (import ./nix/overlay.nix)
-            prometheus-web.overlay
+            prometheus-web.overlays.default
           ];
         };
 
