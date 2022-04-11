@@ -10,7 +10,7 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
-    ocaml-overlays.url = "github:anmonteiro/nix-overlays";
+    ocaml-overlays.url = "github:anmonteiro/nix-overlays/ulrikstrid/hydra-test";
     ocaml-overlays.inputs.nixpkgs.follows = "nixpkgs";
 
     prometheus-web.url =
